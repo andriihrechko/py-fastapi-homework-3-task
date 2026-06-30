@@ -124,8 +124,10 @@ async def activate_user(
             detail="Invalid or expired activation token.",
         )
 
-    expires_at_aware = user_token.expires_at.replace(tzinfo=timezone.utc)
-    if expires_at_aware < datetime.now(timezone.utc):
+    expires_at = cast(datetime, user_token.expires_at).replace(
+        tzinfo=timezone.utc
+    )
+    if expires_at < datetime.now(timezone.utc):
         delete_stmt = delete(ActivationTokenModel).where(
             ActivationTokenModel.id == user_token.id,
         )
@@ -221,8 +223,10 @@ async def password_reset(
             detail="Invalid email or token.",
         )
 
-    expires_at_aware = reset_token.expires_at.replace(tzinfo=timezone.utc)
-    if expires_at_aware < datetime.now(timezone.utc):
+    expires_at = cast(datetime, user_token.expires_at).replace(
+        tzinfo=timezone.utc
+    )
+    if expires_at < datetime.now(timezone.utc):
         delete_stmt = delete(PasswordResetTokenModel).where(
             PasswordResetTokenModel.id == reset_token.id,
         )
@@ -313,7 +317,6 @@ async def refresh(
         decoded_refresh_token = jwt_manager.decode_refresh_token(
             token_data.refresh_token
         )
-        print(decoded_refresh_token)
     except BaseSecurityError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
