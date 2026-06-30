@@ -223,7 +223,7 @@ async def password_reset(
             detail="Invalid email or token.",
         )
 
-    expires_at = cast(datetime, user_token.expires_at).replace(
+    expires_at = cast(datetime, reset_token.expires_at).replace(
         tzinfo=timezone.utc
     )
     if expires_at < datetime.now(timezone.utc):
